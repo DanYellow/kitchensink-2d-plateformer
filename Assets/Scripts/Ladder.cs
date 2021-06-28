@@ -2,7 +2,8 @@
 using UnityEngine.UI;
 
 public class Ladder : MonoBehaviour
-{    private bool isInRange;
+{
+    private bool isInRange;
     private PlayerMvt playerMvt;
     public BoxCollider2D topCollider;
 

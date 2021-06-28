@@ -11,9 +11,10 @@ public class Inventory : MonoBehaviour
     public Text nbCoinsText;
     public static Inventory instance;
     public List<Item> content = new List<Item>();
-    public int currentContentIdx = 0;
+    private int currentContentIdx = 0;
     public Image currentContentImg;
     public Text currentContentTxt;
+    public Sprite emptyImage;
 
     private void Awake()
     {
@@ -23,39 +24,75 @@ public class Inventory : MonoBehaviour
             return;
         }
         instance = this;
-        UpdateCurrentItem();
+    }
+
+    private void Start()
+    {
+        UpdateInventoryUI();
     }
 
     public void ConsumeItem()
     {
+        if (!hasItems())
+        {
+            return;
+        }
+
         Item currentItem = content[currentContentIdx];
         PlayerHealth.instance.HealPlayer(currentItem.hpGiven);
-        PlayerMvt.instance.moveSpeed += currentItem.speedGiven;
+        PlayerEffects.instance.AddSpeed(currentItem.speedGiven, currentItem.speedDuration);
         content.Remove(currentItem);
         GetNextItem();
+        UpdateInventoryUI();
     }
 
     public void GetNextItem()
     {
+        if (!hasItems())
+        {
+            return;
+        }
+
         currentContentIdx++;
-        currentContentIdx = (currentContentIdx + 1) % content.Count;
-        UpdateCurrentItem();
+        if (currentContentIdx > content.Count - 1)
+        {
+            currentContentIdx = 0;
+        }
+        UpdateInventoryUI();
     }
 
     public void GetPreviousItem()
     {
+        if (!hasItems())
+        {
+            return;
+        }
+
         currentContentIdx--;
         if (currentContentIdx < 0)
         {
             currentContentIdx = content.Count - 1;
         }
-        UpdateCurrentItem();
+        UpdateInventoryUI();
     }
 
-    public void UpdateCurrentItem()
+    public void UpdateInventoryUI()
     {
-        currentContentImg.sprite = content[currentContentIdx].image;
-        currentContentTxt.text = content[currentContentIdx].name;
+        if (hasItems())
+        {
+            currentContentImg.sprite = content[currentContentIdx].image;
+            currentContentTxt.text = content[currentContentIdx].name;
+        }
+        else
+        {
+            currentContentImg.sprite = emptyImage;
+            currentContentTxt.text = "No items";
+        }
+    }
+
+    private bool hasItems()
+    {
+        return content.Count > 0;
     }
 
     public void AddCoins(int count)
@@ -64,7 +101,8 @@ public class Inventory : MonoBehaviour
         UpdateTextUI();
     }
 
-    public void UpdateTextUI() {
+    public void UpdateTextUI()
+    {
         nbCoinsText.text = nbCoins.ToString();
     }
 }
