@@ -3,11 +3,14 @@ using System;
 
 public class PlayerMvt : MonoBehaviour
 {
-    private float moveSpeed = 350.0f;
-    private float climbSpeed = 250.0f;
+    [HideInInspector]
+    public float moveSpeed = 350.0f;
+    [HideInInspector]
+    public float climbSpeed = 250.0f;
+    [HideInInspector]
     public float jumpForce;
 
-    [HideInInspector]
+    
     private bool isJumping = false;
     [HideInInspector]
     public bool isGrounded;
